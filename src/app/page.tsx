@@ -5,6 +5,7 @@ import { useState } from 'react';
 import FactForm from '@/components/FactForm';
 import ResultDisplay from '@/components/ResultDisplay';
 import HistorySidebar from '@/components/HistorySidebar';
+import { cn } from '@/lib/utils';
 
 export default function Home() {
   const [result, setResult] = useState<string | null>(null);
@@ -43,64 +44,96 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <>
       <SignedOut>
-        {/* Landing page for unauthenticated users */}
-        <div className="flex flex-col items-center justify-center min-h-screen p-8">
-          <div className="text-center max-w-2xl">
-            <h1 className="text-5xl font-bold text-gray-900 mb-6">
-              Factly
+        <div className="min-h-screen bg-surface flex flex-col items-center justify-center">
+          <div className="text-center space-y-6 animate-fade-in">
+            <h1 className="text-5xl font-bold text-primary">
+              Welcome to Factly
             </h1>
-            <p className="text-xl text-gray-600 mb-8">
-              Discover fascinating facts about any topic. Get interesting,
-              non-obvious insights powered by AI.
+            <p className="text-xl text-secondary max-w-2xl leading-relaxed">
+              Your AI-powered fact finder. Get instant, accurate information on any topic.
             </p>
-            <SignInButton>
-              <button className="px-8 py-4 bg-blue-600 text-white rounded-lg font-medium text-lg hover:bg-blue-700 transition-colors">
-                Get Started
-              </button>
-            </SignInButton>
+            <div className="pt-6">
+              <SignInButton>
+                <button className="btn-primary px-8 py-3 rounded-lg text-lg font-medium">
+                  Get Started
+                </button>
+              </SignInButton>
+            </div>
           </div>
         </div>
       </SignedOut>
 
       <SignedIn>
-        {/* Protected main app */}
-        <div className="h-screen relative">
-          {/* User profile button - top right corner, aligned with sidebar toggle */}
-          <div className="fixed top-6 right-6 z-50">
-            <UserButton />
-          </div>
-
-          {/* History sidebar component (handles its own positioning) */}
+        <div className="min-h-screen bg-surface flex">
+          {/* Sidebar */}
           <HistorySidebar
-            refreshTrigger={refreshTrigger}
             isCollapsed={isSidebarCollapsed}
-            onToggleCollapse={setIsSidebarCollapsed}
+            onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            refreshTrigger={refreshTrigger}
           />
 
-          {/* Main content area - adjusts based on sidebar state */}
-          <div className={`h-full flex flex-col items-center justify-start p-8 transition-all duration-300 ${
-            isSidebarCollapsed ? 'ml-0' : 'ml-80'
-          }`}>
-            <div className="w-full max-w-4xl">
-              <div className="text-center mb-12">
-                <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                  Factly
-                </h1>
-                <p className="text-lg text-gray-600">
-                  What would you like to learn about today?
-                </p>
+          {/* Main content */}
+          <div className={cn(
+            "flex-1 transition-all duration-300 ease-in-out",
+            isSidebarCollapsed ? "ml-16" : "ml-80"
+          )}>
+            <div className="flex flex-col min-h-screen">
+              {/* User Button positioned in top-right */}
+              <div className="absolute top-4 right-4 z-50">
+                <UserButton
+                  appearance={{
+                    elements: {
+                      userButtonAvatarBox: "w-10 h-10"
+                    },
+                    variables: {
+                      colorPrimary: '#3b82f6',
+                      colorBackground: '#111111',
+                      colorText: '#ffffff',
+                      colorTextSecondary: '#a1a1a1',
+                      colorNeutral: '#222222',
+                      colorShimmer: '#1a1a1a'
+                    }
+                  }}
+                />
               </div>
 
-              <div className="flex flex-col items-center">
-                <FactForm onSubmit={handleSubmit} isLoading={isLoading} />
-                <ResultDisplay result={result} isWarning={isWarning} />
-              </div>
+              {/* Main content area */}
+              <main className="flex-1 flex flex-col justify-center items-center p-8">
+                {/* Welcome Message */}
+                <div className="text-center mb-8 animate-fade-in">
+                  <h1 className="text-4xl font-bold text-primary mb-4">
+                    Welcome to Factly
+                  </h1>
+                  <p className="text-lg text-secondary max-w-2xl leading-relaxed">
+                    Get instant, AI-powered facts on any topic. Simply type your question
+                    and receive accurate, concise information in seconds.
+                  </p>
+                </div>
+
+                {/* Fact Form */}
+                <div className="w-full max-w-2xl mb-8">
+                  <FactForm
+                    onSubmit={handleSubmit}
+                    isLoading={isLoading}
+                  />
+                </div>
+
+                {/* Result Display */}
+                {result && (
+                  <div className="w-full max-w-4xl animate-fade-in">
+                    <ResultDisplay
+                      result={result}
+                      isWarning={isWarning}
+                    />
+                  </div>
+                )}
+              </main>
             </div>
           </div>
         </div>
       </SignedIn>
-    </div>
+    </>
   );
 }

@@ -1,7 +1,4 @@
-export type ModerationResult =
-  | { allowed: true }
-  | { allowed: false; reason: string };
-
+// Test script for moderation system - JavaScript version
 const BAD_WORDS = [
   // Violence & Harm
   "suicide", "self-harm", "kill myself", "terrorism", "bomb", "weapon", "gun", "knife", "murder",
@@ -34,15 +31,12 @@ const BAD_WORDS = [
   "want to die", "end it all", "no point living", "kill me", "suicide methods",
   "how to die", "painless death", "suicide note",
 
-  // Offensive Slurs (partial list - add more as needed)
-  "nigger", "faggot", "retard", "spastic", "cripple", "midget", "tranny",
-
   // Other Inappropriate
   "incest", "bestiality", "necrophilia", "rape", "sexual assault", "molest",
   "human trafficking", "slavery", "child labor"
 ];
 
-export function moderateTopic(raw: string): ModerationResult {
+function moderateTopic(raw) {
   const topic = raw.toLowerCase().trim();
 
   // Basic validation checks
@@ -71,4 +65,62 @@ export function moderateTopic(raw: string): ModerationResult {
   }
 
   return { allowed: true };
+}
+
+const testCases = [
+  // Should be ALLOWED
+  { input: "space", shouldAllow: true },
+  { input: "cats", shouldAllow: true },
+  { input: "history of Egypt", shouldAllow: true },
+  { input: "quantum physics", shouldAllow: true },
+  { input: "cooking recipes", shouldAllow: true },
+
+  // Should be BLOCKED - inappropriate words
+  { input: "porn", shouldAllow: false },
+  { input: "sexual content", shouldAllow: false },
+  { input: "violence", shouldAllow: false },
+  { input: "terrorism", shouldAllow: false },
+  { input: "suicide", shouldAllow: false },
+  { input: "drug", shouldAllow: false },
+  { input: "hate speech", shouldAllow: false },
+  { input: "nazi", shouldAllow: false },
+
+  // Should be BLOCKED - harmful phrases
+  { input: "how to kill someone", shouldAllow: false },
+  { input: "i want to die", shouldAllow: false },
+  { input: "how to hurt people", shouldAllow: false },
+
+  // Should be BLOCKED - format issues
+  { input: "a", shouldAllow: false }, // too short
+  { input: "http://example.com", shouldAllow: false }, // URL
+  { input: "<script>", shouldAllow: false }, // unsafe characters
+];
+
+console.log("🧪 Testing Moderation System...\n");
+
+let passedTests = 0;
+let totalTests = testCases.length;
+
+testCases.forEach((testCase, index) => {
+  const result = moderateTopic(testCase.input);
+  const passed = result.allowed === testCase.shouldAllow;
+
+  if (passed) passedTests++;
+
+  console.log(`${index + 1}. "${testCase.input}"`);
+  console.log(`   Expected: ${testCase.shouldAllow ? 'ALLOW' : 'BLOCK'}`);
+  console.log(`   Result: ${result.allowed ? 'ALLOW' : 'BLOCK'}`);
+  if (!result.allowed) {
+    console.log(`   Reason: ${result.reason}`);
+  }
+  console.log(`   ${passed ? '✅ PASS' : '❌ FAIL'}\n`);
+});
+
+console.log(`🎯 Moderation testing complete!`);
+console.log(`📊 Results: ${passedTests}/${totalTests} tests passed (${Math.round((passedTests/totalTests)*100)}%)`);
+
+if (passedTests === totalTests) {
+  console.log("🎉 All tests passed! Moderation system is working correctly.");
+} else {
+  console.log("⚠️  Some tests failed. Please review the moderation logic.");
 }
