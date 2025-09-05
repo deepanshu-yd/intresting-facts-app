@@ -3,18 +3,18 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model RequestLog {
-  id           String   @id @default(cuid())
-  userId       String
-  topic        String
-  responseText String
-  isWarning    Boolean  @default(false)
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String
+  topic         String
+  responseText  String
+  isWarning     Boolean  @default(false)
   warningReason String?
-  createdAt    DateTime @default(now())
+  createdAt     DateTime @default(now())
 
   @@index([userId, createdAt])
 }
