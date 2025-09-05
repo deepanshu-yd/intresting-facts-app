@@ -18,7 +18,11 @@ export const metadata: Metadata = {
   description: 'Discover fascinating facts about any topic with AI-powered precision. Get instant, accurate information in seconds.',
   keywords: ['facts', 'AI', 'knowledge', 'learning', 'discovery', 'information'],
   authors: [{ name: 'Factly Team' }],
-  viewport: 'width=device-width, initial-scale=1',
+}
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
 }
 
 export default function RootLayout({
